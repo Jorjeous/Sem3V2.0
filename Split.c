@@ -4,14 +4,14 @@
 
 
 // frees what I have done)
-void freeStringMas(char**StringMas, int countString)
+void freeStringMas(char **StringMas, int countString)
 {
     for(int i = 0; i < countString; i++)
         free(StringMas[i]);
     free(StringMas);
 }
 
-char ** StringMasMalloc(char ** StringMas, int * SizeStrMas) {
+char ** StringMasMalloc(char **StringMas, int * SizeStrMas) {
     int SizeOfStrMas, count;
     char ** tempArrayString;
 

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+// все закомментированные и лишние пустые строки нужно удалять
 
 void GenStr(int n, char *string){
     char str[1];

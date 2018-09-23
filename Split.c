@@ -2,6 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+// FIXIT: вы по-разному называете перменные, делайте это единообразно: char** stringMas.
+// Не используете транслит: mas -> array или strings
+// Звездочки при объявлении указателей везде либо прилепляйте к названию переменной, либо к названию типа, либо с обоих сторон по пробелу.
+// У меня на работе принято, например, только так писать: char* c; ... но главное для вас лишь бы единообразно по коду.
 
 // frees what I have done)
 void freeStringMas(char **StringMas, int countString)
@@ -15,7 +19,7 @@ char ** StringMasMalloc(char **StringMas, int * SizeStrMas) {
     int SizeOfStrMas, count;
     char ** tempArrayString;
 
-
+    // FIXIT: кажется, что вы пытались realloc реализовать 
     count = SizeOfStrMas = *SizeStrMas;
     SizeOfStrMas  = SizeOfStrMas * 2 * sizeof(char**);
     tempArrayString = StringMas;
@@ -41,6 +45,7 @@ char** split(char *string, const char *separator, int *countString)
     int SizeStrMas;
 
     count = 0;
+    // FIXIT: это лучше объявить константой и вынести наверх
     SizeStrMas = 15;
     StringMas = (char**)malloc(SizeStrMas * sizeof(char**)); // allocating memory for mass of strings
     str = (char*)malloc(strlen(string) + 1);      // allocating memory for copy of string

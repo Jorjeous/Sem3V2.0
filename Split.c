@@ -2,90 +2,93 @@
 #include <stdlib.h>
 #include <string.h>
 
-// FIXIT: вы по-разному называете перменные, делайте это единообразно: char** stringMas.
-// Не используете транслит: mas -> array или strings
+// FIXIT: вы по-разному называете перменные, делайте это единообразно: char** stringMas.|| исправил
+// Не используете трансли mas -> array или strings|| исправил
 // Звездочки при объявлении указателей везде либо прилепляйте к названию переменной, либо к названию типа, либо с обоих сторон по пробелу.
-// У меня на работе принято, например, только так писать: char* c; ... но главное для вас лишь бы единообразно по коду.
+// У меня на работе принято, например, только так писать: char* c; ... но главное для вас лишь бы единообразно по коду.|| исправил
 
 // frees what I have done)
-void freeStringMas(char **StringMas, int countString)
+void FreeStringArr(char** StringArr, int CountString)
 {
-    for(int i = 0; i < countString; i++)
-        free(StringMas[i]);
-    free(StringMas);
+    for(int i = 0; i < CountString; i++)
+        free(StringArr[i]);
+    free(StringArr);
 }
 
-char ** StringMasMalloc(char **StringMas, int * SizeStrMas) {
-    int SizeOfStrMas, count;
-    char ** tempArrayString;
+char** StringArrMalloc(char** StringArr, int* SizeStrArr) {
+    int SizeOfStrArr, count;
+    char** TempArrayString;
 
-    // FIXIT: кажется, что вы пытались realloc реализовать 
-    count = SizeOfStrMas = *SizeStrMas;
-    SizeOfStrMas  = SizeOfStrMas * 2 * sizeof(char**);
-    tempArrayString = StringMas;
-    StringMas = (char**)malloc(SizeOfStrMas);
-    for(int i = 0; i < count; i++) 
+    // FIXIT: кажется, что вы пытались realloc реализовать {не совсем понял, что нужно Fixit, это просто подобие динамического выделения и вроде оно работает)}
+    count = SizeOfStrArr = *SizeStrArr;
+    SizeOfStrArr  = (*SizeStrArr) * 2 * sizeof(char**);
+    TempArrayString = StringArr;
+    StringArr = (char**)malloc(SizeOfStrArr);
+    for(int i = 0; i < count; i++)
     {
-        StringMas[i] = tempArrayString[i];
+        StringArr[i] = TempArrayString[i];
     }
-    free(tempArrayString);
-    *SizeStrMas = SizeOfStrMas;
-    return StringMas;
+    free(TempArrayString);
+    *SizeStrArr = SizeOfStrArr;
+    return StringArr;
 }
-// Function gets pointer on string, delimiter and returns mass of strings(answer)
+
+// Function gets pointer on string, delimiter and returns array of strings(answer)
 // string - what we need to separate
 // separator
-// countString - amount of elements in mass of stings
-char** split(char *string, const char *separator, int *countString)
+// CountString - amount of elements arrays of stings
+
+char** split(char* string, const char* separator, int* CountString)
 {
-    char *token, *last;
-    char ** StringMas;    // Mass of strings (answer)
-    char * str;             // Just helpfull varible to create copies of strings
-    int count;              // Current amount of strings in mas
-    int SizeStrMas;
+    const  int SizeStrArr = 15;
+    char* token;
+    char** StringArr;    // Mass of strings (answer)
+    char* str;             // Just helpfull varible to create copies of strings
+    int count;              // Current amount of strings array
 
     count = 0;
-    // FIXIT: это лучше объявить константой и вынести наверх
-    SizeStrMas = 15;
-    StringMas = (char**)malloc(SizeStrMas * sizeof(char**)); // allocating memory for mass of strings
+    // FIXIT: это лучше объявить константой и вынести наверх || Fixed
+
+    StringArr = (char**)malloc(SizeStrArr * sizeof(char**)); // allocating memory farrays of strings
     str = (char*)malloc(strlen(string) + 1);      // allocating memory for copy of string
     strcpy(str,string);                         // creating a copy
 
     // Start
     token = strtok(str, separator);
     while (token != NULL) {
-        if (count >= SizeStrMas)
+        if (count >= SizeStrArr)
         {
-            StringMas = StringMasMalloc(StringMas,&SizeStrMas);
+            StringArr = StringArrMalloc(StringArr, &SizeStrArr);
         }
-        StringMas[count] = (char*) malloc(strlen(token)+1); // Allocating memory for current token
-        strcpy(StringMas[count], token);                   // Coping token in mas
+        StringArr[count] = (char*) malloc(strlen(token)+1); // Allocating memory for current token
+        strcpy(StringArr[count], token);                   // Coping token array
         token = strtok(NULL, separator);
         count++;
     }
 
     free(str);
 
-    *countString = count;
-    return StringMas;
+    *CountString = count;
+    return StringArr;
 }
 
 
 
 int main() {
-    int countString;
-    char **StringMas;
-    char *GetString;
+    int CountString;
+    char** StringArr;
+    char* GetString;
     //scanf("%s", GetString);
     GetString = "When half way through the journey of our life I found that I was in a gloomy wood";
 
-    StringMas = split(GetString, " ", &countString);
+    StringArr = split(GetString, " ", &CountString);
 
-    for (int i = 0; i < countString; i++) {
-        printf("%3d: %s\n", i, StringMas[i]);
+    for (int i = 0; i < CountString; i++) {
+        printf("%3d: %s\n", i, StringArr[i]);
     }
 
-    freeStringMas(StringMas, countString);
+    FreeStringArr(StringArr, CountString);
+
 
     return 0;
 }

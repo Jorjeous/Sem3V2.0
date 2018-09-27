@@ -2,10 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-// FIXIT: вы по-разному называете перменные, делайте это единообразно: char** stringMas.|| исправил
-// Не используете трансли mas -> array или strings|| исправил
-// Звездочки при объявлении указателей везде либо прилепляйте к названию переменной, либо к названию типа, либо с обоих сторон по пробелу.
-// У меня на работе принято, например, только так писать: char* c; ... но главное для вас лишь бы единообразно по коду.|| исправил
+
+
 
 // frees what I have done)
 void FreeStringArr(char** StringArr, int CountString)
@@ -47,8 +45,7 @@ char** split(char* string, const char* separator, int* CountString)
     int count;              // Current amount of strings array
 
     count = 0;
-    // FIXIT: это лучше объявить константой и вынести наверх || Fixed
-
+    
     StringArr = (char**)malloc(SizeStrArr * sizeof(char**)); // allocating memory farrays of strings
     str = (char*)malloc(strlen(string) + 1);      // allocating memory for copy of string
     strcpy(str,string);                         // creating a copy

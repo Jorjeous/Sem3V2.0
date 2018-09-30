@@ -2,7 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-
+// FIXIT: 1) CountString -> countString первая буква переменных строчная
+// 2) про realloc обговорили на семинаре: лучше пользоваться готовым
+// 3) с помощью scanf не получится считать строку с пробелами, нужно пользоваться fgets
 
 
 // frees what I have done)

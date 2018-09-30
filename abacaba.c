@@ -12,9 +12,9 @@ void GenStr(int n, char *string){
     string[0] = 'a';
     
     for(i = 1; i < n; i++){
-        str[0] = (char) ('a' + i);
+        str[0] = (char)('a' + i);
         strcat(string, str);
-        strncpy(string + (1 << i), string, (1<< i) - 1);
+        strncpy(string + (1 << i), string, (1 << i) - 1);
     }
 }
 
@@ -22,7 +22,7 @@ int main() {
     int n;
     char *a;
     scanf("%d", &n);
-    a = calloc((1 << n), sizeof(char));
+    a = calloc(1 << n, sizeof(char));
 
     GenStr(n, a);
 

@@ -2,91 +2,72 @@
 #include <stdlib.h>
 #include <string.h>
 
-// FIXIT: 1) CountString -> countString первая буква переменных строчная
-// 2) про realloc обговорили на семинаре: лучше пользоваться готовым
-// 3) с помощью scanf не получится считать строку с пробелами, нужно пользоваться fgets
 
 
 // frees what I have done)
-void FreeStringArr(char** StringArr, int CountString)
+void FreeStringArr(char** stringArr, int countString)
 {
-    for(int i = 0; i < CountString; i++)
-        free(StringArr[i]);
-    free(StringArr);
+    for(int i = 0; i < countString; i++)
+        free(stringArr[i]);
+    free(stringArr);
 }
-
-char** StringArrMalloc(char** StringArr, int* SizeStrArr) {
-    int SizeOfStrArr, count;
-    char** TempArrayString;
-
-    // FIXIT: кажется, что вы пытались realloc реализовать {не совсем понял, что нужно Fixit, это просто подобие динамического выделения и вроде оно работает)}
-    count = SizeOfStrArr = *SizeStrArr;
-    SizeOfStrArr  = (*SizeStrArr) * 2 * sizeof(char**);
-    TempArrayString = StringArr;
-    StringArr = (char**)malloc(SizeOfStrArr);
-    for(int i = 0; i < count; i++)
-    {
-        StringArr[i] = TempArrayString[i];
-    }
-    free(TempArrayString);
-    *SizeStrArr = SizeOfStrArr;
-    return StringArr;
-}
-
 // Function gets pointer on string, delimiter and returns array of strings(answer)
 // string - what we need to separate
 // separator
-// CountString - amount of elements arrays of stings
+// countString - amount of elements arrays of stings
 
-char** split(char* string, const char* separator, int* CountString)
+char** Split(char* string, const char* separator, int* countString)
 {
-    const  int SizeStrArr = 15;
+    const  int sizeStrArr = 15;
     char* token;
-    char** StringArr;    // Mass of strings (answer)
+    char** stringArr;    // Mass of strings (answer)
     char* str;             // Just helpfull varible to create copies of strings
     int count;              // Current amount of strings array
 
     count = 0;
-    
-    StringArr = (char**)malloc(SizeStrArr * sizeof(char**)); // allocating memory farrays of strings
+
+    stringArr = (char**)malloc(sizeStrArr * sizeof(char**)); // allocating memory farrays of strings
     str = (char*)malloc(strlen(string) + 1);      // allocating memory for copy of string
     strcpy(str,string);                         // creating a copy
 
     // Start
     token = strtok(str, separator);
     while (token != NULL) {
-        if (count >= SizeStrArr)
+        if (count >= sizeStrArr)
         {
-            StringArr = StringArrMalloc(StringArr, &SizeStrArr);
+            stringArr = realloc(stringArr, sizeof(char**)*(count+20));
         }
-        StringArr[count] = (char*) malloc(strlen(token)+1); // Allocating memory for current token
-        strcpy(StringArr[count], token);                   // Coping token array
+        stringArr[count] = (char*) malloc(strlen(token)+1); // Allocating memory for current token
+        strcpy(stringArr[count], token);                   // Coping token array
         token = strtok(NULL, separator);
         count++;
     }
 
     free(str);
 
-    *CountString = count;
-    return StringArr;
+    *countString = count;
+    return stringArr;
 }
 
 
 
 int main() {
-    int CountString;
-    char** StringArr;
-    char* GetString;
-    //scanf("%s", GetString);
-    GetString = "When half way through the journey of our life I found that I was in a gloomy wood";
+    int countString;
+    char** stringArr;
+    char* getString;
+  /*FILE *file;
+    file = fopen("", "r");
+    fgets(getString, 128, file); */
 
-    StringArr = split(GetString, " ", &CountString);
+    getString = "When half way through the journey of our life I found that I was in a gloomy wood";
 
-    for (int i = 0; i < CountString; i++) {
-        printf("%3d: %s\n", i, StringArr[i]);
+    stringArr = Split(getString, " ", &countString);
+
+    for (int i = 0; i < countString; i++) {
+        printf("%3d: %s\n", i, stringArr[i]);
     }
 
-    FreeStringArr(StringArr, CountString);
+    FreeStringArr(stringArr, countString);
 
 
     return 0;

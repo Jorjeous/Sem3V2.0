@@ -1,0 +1,145 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <string.h>
+
+
+typedef struct SW
+{
+    int str, word;
+} Max;
+
+typedef struct NP
+{
+    unsigned int num, pid;
+} Pid;
+
+typedef struct ALL
+{
+    int count;
+    char** str;
+    char* delimeters;
+    char*** words;
+    Max* max;
+} All;
+void split(All* SW, int i);
+void AllocMem(All* SW, int count);
+void FreesMem(All* mem, int count);
+int Cmp(const void* x, const void* y);
+
+
+int main(){
+    int i, j, x, y;
+    int count, time;
+    char delimeters[] = " \n";
+    int maxNumberStr;
+    All SW;
+    AllocMem(&SW, maxNumberStr);
+
+    SW.delimeters = delimeters;
+    maxNumberStr = 100;
+    count = 0;
+    scanf("%d\n", &time);
+
+
+
+
+
+    //getting strins
+    while(fgets(SW.str[count], SW.max->str, stdin))
+    {
+        printf("%s", SW.str[count]);
+        SW.count = 0;
+        split(&SW, count);
+        count++;
+    }
+    count = count - 1;
+
+    //array of pid + times
+    Pid child[count];
+    int pid;
+    for(i = 0; i < count; i++)
+    {
+        child[i].num = (unsigned int)atoi(SW.words[i][0]);
+    }
+
+    //new process (
+    for(i = 0; i < count; i++)
+    {
+        pid = fork();
+        child[i].pid = pid;
+        if(pid == 0){
+            sleep(child[i].num);
+            execvp(SW.words[i][1], &(SW.words[i][1]));
+            exit(0);
+        } else if(pid == -1){
+            printf("Error 42(((\n");
+            return -1;
+        }
+    }
+
+    qsort(child, count, sizeof(Pid), Cmp);
+
+    sleep(time);
+    for(i = 0; i <= child[count-1].num; i++)
+    {   //killing processes
+        for(j = 0; j < count; j++)
+        {
+            if (child[j].num == i) {
+                kill(child[j].pid, SIGKILL);
+                printf("Process with pid %d killed \n", child[j].pid);
+            }
+        }
+        sleep(1);
+    }
+
+    FreesMem(&SW, maxNumberStr);
+
+    return 0;
+}
+
+
+
+void split(All* SW, int i)
+{
+    SW->words[i][SW->count] = strtok(SW->str[i], SW->delimeters);
+
+    while(SW->words[i][SW->count] != NULL){
+        SW->count++;
+        SW->words[i][SW->count] = strtok(NULL, SW->delimeters);
+    }
+}
+void AllocMem(All* SW, int count)
+{
+    SW->max = calloc(1, sizeof(Max));
+    SW->max->str = 5000;
+    SW->max->word = 50;
+    SW->count = 0;
+    SW->str = calloc(count, sizeof(char*));
+    SW->words = calloc(count, sizeof(char**));
+    for(int i = 0; i < count; i++)
+    {
+        SW->str[i] = calloc(SW->max->str, sizeof(char));
+        SW->words[i] = calloc(SW->max->word, sizeof(char*));
+    }
+}
+void FreesMem(All* mem, int count)
+{
+    for(int i = 0; i < count; i++)
+    {
+        free(mem->words[i]);
+        free(mem->str[i]);
+    }
+    free(mem->words);
+    free(mem->str);
+    free(mem->max);
+}
+int Cmp(const void* x, const void* y)
+{
+const Pid* SW = (const Pid*)x;
+const Pid* ALL = (const Pid*)y;
+return SW->num - ALL->num;
+}
+
+

@@ -2,15 +2,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-
-
-// frees what I have done)
 void FreeStringArr(char** stringArr, int countString)
 {
     for(int i = 0; i < countString; i++)
         free(stringArr[i]);
     free(stringArr);
 }
+
 // Function gets pointer on string, delimiter and returns array of strings(answer)
 // string - what we need to separate
 // separator
@@ -33,6 +31,8 @@ char** Split(char* string, const char* separator, int* countString)
     // Start
     token = strtok(str, separator);
     while (token != NULL) {
+        // FIXIT: 1) магическая константа 20 
+        // 2) Кажется, что после этого realloc нужно еще sizeeStrArr увеличить на 20 
         if (count >= sizeStrArr)
         {
             stringArr = realloc(stringArr, sizeof(char**)*(count+20));

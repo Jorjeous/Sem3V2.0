@@ -16,8 +16,7 @@ int main(int argc, char** argv)
 
     char buf[BUFFERSIZE];
     int fd, len;
-    pid_t pidRead = 0;
-    pid_t pidWrite = 0;
+
 
     if(mkfifo(NAMEDPIPE, 0777))
     {
@@ -44,14 +43,5 @@ int main(int argc, char** argv)
         printf("Incoming messege (%d): %s\n", len, buf);
 
     }
-
-
-
-
-
-
-
-
-    printf("Hello World!\n");
     return 0;
 }

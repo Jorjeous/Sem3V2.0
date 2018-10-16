@@ -1,0 +1,118 @@
+#include <stdio.h>
+#include <sys/stat.h>
+#include <string.h>
+#include <fcntl.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <assert.h>
+#include <stdlib.h>
+
+#define BUFFERSIZE 50
+#define NAMEDPIPE1 "/home/george/Desktop/projects/messege/myNamedPipe1"
+#define NAMEDPIPE2 "/home/george/Desktop/projects/messege/myNamedPipe2"
+
+//mr. A & mr. B
+//    1       2
+//for some reasons it does not work propertly ¯ \ _ (ツ) _ / ¯ 
+
+
+
+int main(int argc, char** argv)
+{
+    // 1 - write/read 2 - read/write
+    char buf1[BUFFERSIZE];
+    char buf2[BUFFERSIZE];
+    int fd1, fd2, len;
+    pid_t pid1 = 0;
+    pid_t pid2 = 0;
+    if(mkfifo(NAMEDPIPE1, 0777))
+    {
+        perror("Ctreate_1");
+        return 1;
+    }
+    printf("%s(1), is created", NAMEDPIPE1);
+
+    if(mkfifo(NAMEDPIPE2, 0777))
+    {
+        perror("Ctreate_2");
+        return 1;
+    }
+    printf("%s(2), is created", NAMEDPIPE2);
+    pid1 = fork();
+    if(pid1 < 0)
+    {
+        perror("Fork");
+        return 1;
+    }
+    if(pid1)
+    {
+        pid2 = fork();
+    }
+    if(atoi(argv[1]) == 1)
+    {
+        if(!pid1)                     //runns by pid2
+        {
+            fd2 = open(NAMEDPIPE2, O_WRONLY);
+            printf("")
+        }
+        if((!pid2) && pid1)          //runs by pid1
+        {
+            fd1 = open(NAMEDPIPE1, O_RDONLY);
+        }
+        while(1)
+        {
+            memset(buf1, '\0', BUFFERSIZE);
+            memset(buf2, '\0', BUFFERSIZE);
+            if(!pid1 && !pid2)
+            {
+                fgets(buf1, BUFFERSIZE, stdin);
+                write(fd2, buf1, BUFFERSIZE);
+            }
+            if(!pid1 && pid2)
+            {
+                read(fd1, buf2, BUFFERSIZE);
+                fprintf(stdout, "Incoming messege (%ld):%s", strlen(buf2), buf2);
+
+            }
+        }
+
+    }
+    if(atoi(argv[1]) == 2)
+    {
+        if(!pid2)                     //runns by pid1
+        {
+            fd2 = open(NAMEDPIPE2, O_WRONLY);
+        }
+        if((!pid1) && pid2)          //runs by pid2
+        {
+            fd1 = open(NAMEDPIPE1, O_RDONLY);
+        }
+        while(1)
+        {
+            memset(buf1, '\0', BUFFERSIZE);
+            memset(buf2, '\0', BUFFERSIZE);
+            if(!pid1 && !pid2)
+            {
+                fgets(buf1, BUFFERSIZE, stdin);
+                write(fd2, buf1, BUFFERSIZE);
+            }
+            if(!pid1 && pid2)
+            {
+                read(fd1, buf2, BUFFERSIZE);
+                fprintf(stdout, "Incoming messege (%ld):%s", strlen(buf2), buf2);
+
+            }
+        }
+
+    }
+
+
+
+
+
+
+
+    printf("Hello World!\n");
+    return 0;
+}

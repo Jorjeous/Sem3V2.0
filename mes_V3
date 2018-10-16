@@ -51,12 +51,12 @@ int main(int argc, char** argv)
     }
     if(atoi(argv[1]) == 1)
     {
-        if(!pid1)                     //runns by pid2
+        if(!pid1)                     //runns by pid1
         {
             fd2 = open(NAMEDPIPE2, O_WRONLY);
             printf("")
         }
-        if((!pid2) && pid1)          //runs by pid1
+        if((!pid2) && pid1)          //runs by pid2
         {
             fd1 = open(NAMEDPIPE1, O_RDONLY);
         }
@@ -80,11 +80,11 @@ int main(int argc, char** argv)
     }
     if(atoi(argv[1]) == 2)
     {
-        if(!pid2)                     //runns by pid1
+        if(!pid2)                     //runns by pid2
         {
             fd2 = open(NAMEDPIPE2, O_WRONLY);
         }
-        if((!pid1) && pid2)          //runs by pid2
+        if((!pid1) && pid2)          //runs by pid1
         {
             fd1 = open(NAMEDPIPE1, O_RDONLY);
         }

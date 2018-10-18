@@ -48,6 +48,11 @@ int main(int argc, char* argv[])
     {
         pid2 = fork();
     }
+    if(avrc < 2){
+    printf("Error, wtite 1 or 2");
+    exit(1);
+    }
+    
     if(atoi(argv[1]) == 1)
     {
         if(!pid1)                     //runns by pid1

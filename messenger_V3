@@ -30,17 +30,9 @@ int main(int argc, char* argv[])
     pid_t pid2 = 0;
     printf("START");
     if(mkfifo(NAMEDPIPE1, 0777))
-    {
-        //perror("Ctreate_1");
-        //return 1;
-    }
-    //printf("%s(1), is created", NAMEDPIPE1);
 
-    {
-        //perror("Ctreate_2");
-        //return 1;
-    }
-    //printf("%s(2), is created", NAMEDPIPE2);
+    if(mkfifo(NAMEDPIPE2, 0777))
+  
     pid1 = fork();
     if(pid1 < 0)
     {
@@ -61,7 +53,7 @@ int main(int argc, char* argv[])
         if(!pid1)                     //runns by pid1
         {
             fd2 = open(NAMEDPIPE1, O_WRONLY);
-            //printf("Ok 1");
+           
         }
         if(!pid2 && pid1)          //runs by pid2
         {
@@ -70,19 +62,15 @@ int main(int argc, char* argv[])
         printf("first");
        	while(1)
         {
-            //printf("%d", j);
-            //memset(buf1, '\0', BUFFERSIZE);
-            //memset(buf2, '\0', BUFFERSIZE);
+            
             if(!pid1 && !pid2)
             {
-                //printf("[1]%d", j);
                 fgets(buf1, BUFFERSIZE, stdin);
                 write(fd2, buf1, BUFFERSIZE);
             }
             if(!pid2 && pid1)
             {
-                //printf("[3]%d", j);
-                read(fd1, buf2, BUFFERSIZE);
+				read(fd1, buf2, BUFFERSIZE);
                 fprintf(stdout, "Incoming messege(1):%s", buf2);
 
             }
@@ -102,9 +90,6 @@ int main(int argc, char* argv[])
         printf("second");
         while(1)
         {
-
-            //memset(buf1, '\0', BUFFERSIZE);
-            //memset(buf2, '\0', BUFFERSIZE);
             if(!pid1 && !pid2)
             {
                 //printf("(1)%d", i);

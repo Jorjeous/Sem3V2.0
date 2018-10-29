@@ -17,8 +17,28 @@
 
 
 // FIXIT: 1)+
-// 2) Не понимаю, зачем вам нужно 3 процесса для решения задачи. Почему 2х мало?
-// 3) Код в значительной степени дублируется для 1го и 2го собеседников. Нужно избежать этого
+// 2) Не понимаю, зачем вам нужно 3 процесса для решения задачи. Почему 2х мало? (это для симметирии)
+// 3) Код в значительной степени дублируется для 1го и 2го собеседников. Нужно избежать этого (сократил кол во дубл кода в два раза)
+void WHILE(pid_t pid1, pid_t pid2, char *buf1, char *buf2){	
+			while(1){
+				if(!pid1 && !pid2){
+					//printf("(1)%d", i);
+					fgets(buf1, BUFFERSIZE, stdin);
+					write(fd2, buf1, BUFFERSIZE);
+				}
+				if(!pid2 && pid1){
+					//printf("(2)%d", i);
+					read(fd1, buf2, BUFFERSIZE);
+					fprintf(stdout, "Incoming messege(2):%s", buf2);
+				}
+			}
+}
+			
+
+
+
+
+
 
 int main(int argc, char* argv[])
 {
@@ -59,23 +79,8 @@ int main(int argc, char* argv[])
         {
             fd1 = open(NAMEDPIPE2, O_RDONLY);
         }
-        printf("first");
-       	while(1)
-        {
-            
-            if(!pid1 && !pid2)
-            {
-                fgets(buf1, BUFFERSIZE, stdin);
-                write(fd2, buf1, BUFFERSIZE);
-            }
-            if(!pid2 && pid1)
-            {
-				read(fd1, buf2, BUFFERSIZE);
-                fprintf(stdout, "Incoming messege(1):%s", buf2);
-
-            }
-        }
-
+        printf("first");     
+		WHILE(pid_t pid1, pid_t pid2, char *buf1, char *buf2);
     }
     if(atoi(argv[1]) == 2)
     {
@@ -88,23 +93,7 @@ int main(int argc, char* argv[])
             fd1 = open(NAMEDPIPE1, O_RDONLY);
         }
         printf("second");
-        while(1)
-        {
-            if(!pid1 && !pid2)
-            {
-                //printf("(1)%d", i);
-                fgets(buf1, BUFFERSIZE, stdin);
-                write(fd2, buf1, BUFFERSIZE);
-            }
-            if(!pid2 && pid1)
-            {
-                //printf("(2)%d", i);
-                read(fd1, buf2, BUFFERSIZE);
-                fprintf(stdout, "Incoming messege(2):%s", buf2);
-
-            }
-        }
-
+   		WHILE(pid_t pid1, pid_t pid2, char *buf1, char *buf2);
     }
     printf("Hello World!\n");
     return 0;

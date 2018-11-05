@@ -16,33 +16,49 @@
 //    1       2
 
 
-// FIXIT: 1)+
-// 2) Не понимаю, зачем вам нужно 3 процесса для решения задачи. Почему 2х мало? (это для симметирии)
-// 3) Код в значительной степени дублируется для 1го и 2го собеседников. Нужно избежать этого (сократил кол во дубл кода в два раза)
-void WHILE(pid_t pid1, pid_t pid2, char *buf1, char *buf2){	
-			while(1){
-				if(!pid1 && !pid2){
-					//printf("(1)%d", i);
-					fgets(buf1, BUFFERSIZE, stdin);
-					write(fd2, buf1, BUFFERSIZE);
-				}
-				if(!pid2 && pid1){
-					//printf("(2)%d", i);
-					read(fd1, buf2, BUFFERSIZE);
-					fprintf(stdout, "Incoming messege(2):%s", buf2);
-				}
-			}
+
+void WorkInProgress(pid_t pid1, pid_t pid2, char *buf1, char *buf2, int fd1, int fd2){
+                        while(1){
+                                if(!pid1 && !pid2){
+                                        //printf("(1)%d", i);
+                                        fgets(buf1, BUFFERSIZE, stdin);
+                                        write(fd2, buf1, BUFFERSIZE);
+                                }
+                                if(!pid2 && pid1){
+                                        //printf("(2)%d", i);
+                                        read(fd1, buf2, BUFFERSIZE);
+                                        fprintf(stdout, "Incoming messege(2):%s", buf2);
+                                }
+                        }
 }
-			
+
+void Detection(int a, int* fd1, int* fd2, pid_t pid1, pid_t pid2, char** name1){
+
+
+    if(!pid1)                     //runns by pid1
+    {
+        *fd2 = open(name1[(a) % 2], O_WRONLY);
+
+    }
+    if(!pid2 && pid1)          //runs by pid2
+    {
+        *fd1 = open(name1[(a+1) % 2], O_RDONLY);
+    }
+
+}
+
+
+
+
 // FIXIT: 1) Неясно, зачем именно вам симметрия.
-// 2) Ваш код даже не компилируется.
-// 3) Посмотите ветки if(atoi(argv[1]) == 1) { ... } и if(atoi(argv[1]) == 2) { ... } Они очень сильно похожи 
+// 2) Ваш код даже не компилируется. 
+// 3) Посмотите ветки if(atoi(argv[1]) == 1) { ... } и if(atoi(argv[1]) == 2) { ... } Они очень сильно похожи
 // хочется это тоже вынести в отдельную ф-ю
 // 4) Название для ф-и WHILE неподходящее
 
 int main(int argc, char* argv[])
 {
-
+    
     char buf1[BUFFERSIZE] = {0};
     char buf2[BUFFERSIZE] = {0};
     int fd1, fd2, len;
@@ -52,7 +68,7 @@ int main(int argc, char* argv[])
     if(mkfifo(NAMEDPIPE1, 0777))
 
     if(mkfifo(NAMEDPIPE2, 0777))
-  
+
     pid1 = fork();
     if(pid1 < 0)
     {
@@ -63,37 +79,41 @@ int main(int argc, char* argv[])
     {
         pid2 = fork();
     }
-    if(avrc < 2){
+    if(argc < 2){
     printf("Error, wtite 1 or 2");
     exit(1);
     }
-    
+    char* name1[]={NAMEDPIPE1, NAMEDPIPE2};
+    //printf("%s|%s", name1[0], name1[1]);
     if(atoi(argv[1]) == 1)
     {
-        if(!pid1)                     //runns by pid1
+        Detection(atoi(argv[1]), &fd1, &fd2, pid1,  pid2, name1);
+        /*if(!pid1)                     //runns by pid1
         {
             fd2 = open(NAMEDPIPE1, O_WRONLY);
-           
+
         }
         if(!pid2 && pid1)          //runs by pid2
         {
             fd1 = open(NAMEDPIPE2, O_RDONLY);
-        }
-        printf("first");     
-		WHILE(pid_t pid1, pid_t pid2, char *buf1, char *buf2);
+        }*/
+        printf(" first");
+        WorkInProgress(pid1, pid2,  buf1, buf2, fd1, fd2);
     }
     if(atoi(argv[1]) == 2)
     {
-        if(!pid1)                     //runns by pid1
+        Detection(atoi(argv[1]), &fd1, &fd2, pid1,  pid2, name1);
+        /*if(!pid1)                     //runns by pid1
         {
             fd2 = open(NAMEDPIPE2, O_WRONLY);
+
         }
         if(!pid2 && pid1)          //runs by pid2
         {
             fd1 = open(NAMEDPIPE1, O_RDONLY);
-        }
+        }*/
         printf("second");
-   		WHILE(pid_t pid1, pid_t pid2, char *buf1, char *buf2);
+        WorkInProgress( pid1,  pid2,  buf1,  buf2, fd1, fd2);
     }
     printf("Hello World!\n");
     return 0;

@@ -50,11 +50,11 @@ void Detection(int a, int* fd1, int* fd2, pid_t pid1, pid_t pid2, char** name1){
 
 
 
-// FIXIT: 1) Неясно, зачем именно вам симметрия.
-// 2) Ваш код даже не компилируется. 
+// FIXIT: 1) Неясно, зачем именно вам симметрия.( Это следствие первой схемы которую я нарисовал, да, можно двумя процессами, но уже слишком далеко зашел))) 
+// 2) Ваш код даже не компилируется. (Это я попытался исправить "онлайн", до правок все работало, и сейчас (после новых правок, тоже))
 // 3) Посмотите ветки if(atoi(argv[1]) == 1) { ... } и if(atoi(argv[1]) == 2) { ... } Они очень сильно похожи
-// хочется это тоже вынести в отдельную ф-ю
-// 4) Название для ф-и WHILE неподходящее
+// хочется это тоже вынести в отдельную ф-ю(вынес в отдельную)
+// 4) Название для ф-и WHILE неподходящее (поменял название
 
 int main(int argc, char* argv[])
 {
@@ -83,35 +83,17 @@ int main(int argc, char* argv[])
     printf("Error, wtite 1 or 2");
     exit(1);
     }
-    char* name1[]={NAMEDPIPE1, NAMEDPIPE2};
+    char* name1[]={NAMEDPIPE1, NAMEDPIPE2}; // можно было бы запихнуть в ф-ю Detection, так показалось надежнее
     //printf("%s|%s", name1[0], name1[1]);
     if(atoi(argv[1]) == 1)
     {
         Detection(atoi(argv[1]), &fd1, &fd2, pid1,  pid2, name1);
-        /*if(!pid1)                     //runns by pid1
-        {
-            fd2 = open(NAMEDPIPE1, O_WRONLY);
-
-        }
-        if(!pid2 && pid1)          //runs by pid2
-        {
-            fd1 = open(NAMEDPIPE2, O_RDONLY);
-        }*/
         printf(" first");
         WorkInProgress(pid1, pid2,  buf1, buf2, fd1, fd2);
     }
     if(atoi(argv[1]) == 2)
     {
         Detection(atoi(argv[1]), &fd1, &fd2, pid1,  pid2, name1);
-        /*if(!pid1)                     //runns by pid1
-        {
-            fd2 = open(NAMEDPIPE2, O_WRONLY);
-
-        }
-        if(!pid2 && pid1)          //runs by pid2
-        {
-            fd1 = open(NAMEDPIPE1, O_RDONLY);
-        }*/
         printf("second");
         WorkInProgress( pid1,  pid2,  buf1,  buf2, fd1, fd2);
     }

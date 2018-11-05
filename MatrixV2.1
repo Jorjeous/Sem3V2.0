@@ -57,23 +57,7 @@ int main()
         }
     }
 
-    // Show matA
-    printf("\n MatrixA \n");
-    for (i = 0; i < MAX; i++){
-        for (j = 0; j < MAX; j++){
-            printf("%d ", matA[i][j]);
-        }
-        printf("\n");
-    }
 
-    // Show matB
-    printf("\n MatrixB \n");
-    for (i = 0; i < MAX; i++){
-        for (j = 0; j < MAX; j++){
-            printf("%d ", matB[i][j]);
-        }
-    printf("\n");
-    }
 
 
     pthread_t threads[MAX_THREAD];
@@ -100,3 +84,22 @@ int main()
     return 0;
 
 }
+
+
+/*    // Show matA
+    printf("\n MatrixA \n");
+    for (i = 0; i < MAX; i++){
+        for (j = 0; j < MAX; j++){
+            printf("%d ", matA[i][j]);
+        }
+        printf("\n");
+    }
+
+    // Show matB
+    printf("\n MatrixB \n");
+    for (i = 0; i < MAX; i++){
+        for (j = 0; j < MAX; j++){
+            printf("%d ", matB[i][j]);
+        }
+    printf("\n");
+    }*/

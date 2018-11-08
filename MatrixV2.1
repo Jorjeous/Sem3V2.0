@@ -26,6 +26,7 @@
 int matA[MAX][MAX];
 int matB[MAX][MAX];
 int matC[MAX][MAX];
+int core[MAX_THREAD];
 int step_i = 0;
 
 void* multi()
@@ -49,6 +50,11 @@ int main()
     int i, j, k;
     int* p;
     
+    for(i = 0; i <= MAX_THREAD; i++){
+    
+    }
+    
+    
     //random values in matA and matB
     for (i = 0; i < MAX; i++) {
         for (j = 0; j < MAX; j++) {
@@ -71,6 +77,7 @@ int main()
     for (i = 0; i < MAX_THREAD; i++){
         pthread_join(threads[i], NULL);
     }
+     time2 = time(NULL);
 
     printf("\n Multiplication of A and B \n");
     for (i = 0; i < MAX; i++) {
@@ -79,7 +86,7 @@ int main()
         }
         printf("\n");
     }
-    time2 = time(NULL);
+   
     printf("\n time:%d\n", time2-time1);
     return 0;
 

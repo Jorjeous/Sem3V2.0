@@ -29,9 +29,11 @@ int matC[MAX][MAX];
 int core[MAX_THREAD];
 int step_i = 0;
 
-void* multi()
+
+
+void* multi(void* arg)
 {
-    int core = step_i++;
+    int core = (int) arg;
 
     // Each thread computes 1/PATR  of matrix multiplication
     for (int i = core * MAX / PART; i < (core + 1) * MAX / PART; i++){
@@ -48,13 +50,12 @@ int main()
     int time1;
     int time2;
     int i, j, k;
-    int* p;
-    
-    for(i = 0; i <= MAX_THREAD; i++){
-    
+    int step[MAX_THREAD];
+
+    for(i = 1; i <= MAX; i++){
+        step[i] = i;
     }
-    
-    
+
     //random values in matA and matB
     for (i = 0; i < MAX; i++) {
         for (j = 0; j < MAX; j++) {
@@ -70,14 +71,14 @@ int main()
 
     // Creating MAXTHREAD amount of threads, each should calc its own part
     for (i = 0; i < MAX_THREAD; i++) {
-        pthread_create(&threads[i], NULL, multi, (void*)(p));
+        pthread_create(&threads[i], NULL, multi, (void*)(&step[i]));
     }
 
     // waiting for all threads to do their job
     for (i = 0; i < MAX_THREAD; i++){
         pthread_join(threads[i], NULL);
     }
-     time2 = time(NULL);
+    time2 = time(NULL);
 
     printf("\n Multiplication of A and B \n");
     for (i = 0; i < MAX; i++) {
@@ -86,7 +87,7 @@ int main()
         }
         printf("\n");
     }
-   
+
     printf("\n time:%d\n", time2-time1);
     return 0;
 
@@ -110,4 +111,5 @@ int main()
         }
     printf("\n");
     }*/
+
     

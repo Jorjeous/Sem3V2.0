@@ -1,0 +1,130 @@
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <sys/sem.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <malloc.h>
+#include <ctype.h>
+
+
+//this is washer 1
+#define END 42
+#define TYPES 4
+#define MAX_THINGS 3
+
+
+
+void Asem(int num, int a, int semid){
+    struct sembuf mysembuf;
+
+    mysembuf.sem_flg = 0;  /* Флаги операции */
+    mysembuf.sem_num = num;/* Номер семафора */
+    mysembuf.sem_op = a;   /* Операция над семафором */
+    semop(semid, &mysembuf, 1);
+}
+int main()
+{
+
+    int amount, wait, time1, time2;
+    int washTime[TYPES];
+    int wipingTime[TYPES];
+    FILE* times = fopen("times.txt", "r+");
+
+
+
+
+    struct mymsgbuf{
+        long mtype;
+        char type;
+        int mypid;
+    } mybuf;
+
+    int msgid, semid;
+    int len;
+    key_t key;
+    char pathname[] = "wash_1.c";
+    key = ftok(pathname, 0);
+    msgid = msgget(key, 0);
+
+    semid = semget(key, 1, 0);
+
+
+
+    char* name = (char*) malloc(100*sizeof(char));
+
+
+    for(int i = 0; i < TYPES; i++)
+    {
+            fscanf(times, "%s", name);
+            if(strcmp(name, "plate") == 0)
+            {
+                    fscanf(times, "%d %d", &washTime[0], &wipingTime[0]);
+            }
+            else if(strcmp(name, "spoon") == 0)
+            {
+                    fscanf(times, "%d %d", &washTime[1], &wipingTime[1]);
+            }
+            else if(strcmp(name, "knife") == 0)
+            {
+                   fscanf(times, "%d %d", &washTime[2], &wipingTime[2]);
+            }
+    }
+
+    semid = semget(key, 1, 0);
+    Asem(0, MAX_THINGS, semid);
+
+
+    FILE* heap = fopen("plates.txt", "r");
+    fscanf(heap, "%d", &amount);
+
+    for(int i = 0; i < amount; i++)
+    {
+            fscanf(heap, "%s", name);
+            printf("Washer: washing this: %s\n\n", name);
+            if(strcmp(name, "plate") == 0)
+            {
+                    wait = washTime[0];
+                    sleep(wait);
+            }
+            else if(strcmp(name, "spoon") == 0)
+            {
+                wait = washTime[1];
+                sleep(wait);
+            }
+            else if(strcmp(name, "knife") == 0)
+            {
+                wait = washTime[2];
+                sleep(wait);
+            }
+
+            printf("Washer: No space to put the thing!\n");
+            printf("... Waiting\n");
+            Asem(0, -1, semid);
+            mybuf.mtype = 1;
+            mybuf.type = name[0];
+            len = sizeof(char);
+            msgsnd(msgid, &mybuf, len, 0);
+            printf("Washer: put the %s on table\n", name);
+    }
+
+
+
+    printf("Finally!\n");
+    mybuf.mtype = 1;
+    mybuf.type = END;
+    len = sizeof(char);
+    msgsnd(msgid, &mybuf, len, 0);
+
+
+
+
+
+
+
+
+
+    return 0;
+}

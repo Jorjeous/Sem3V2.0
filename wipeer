@@ -1,0 +1,128 @@
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <sys/sem.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <malloc.h>
+#include <ctype.h>
+
+
+//this is wiper 2
+#define END 42
+#define TYPES 4
+#define MAX_THINGS 3
+
+void Asem(int num, int a, int semid){
+    struct sembuf mysembuf;
+
+    mysembuf.sem_flg = 0;  /* Флаги операции */
+    mysembuf.sem_num = num;/* Номер семафора */
+    mysembuf.sem_op = a;   /* Операция над семафором */
+    semop(semid, &mysembuf, 1);
+}
+int main()
+{
+    int washTime[TYPES];
+    int wipingTime[TYPES];
+    struct mymsgbuf{
+        long mtype;
+        char type;
+        int mypid;
+    } mybuf;
+
+    int msgid, semid;
+    int len;
+    key_t key;
+    char pathname[] = "wash_1.c";
+    key = ftok(pathname, 0);
+    msgid = msgget(key, 0);
+
+
+
+    char* name = (char*)malloc(100 * sizeof(char));
+    FILE* times = fopen("times.txt", "r+");
+    for(int i = 0; i < TYPES; i++)
+    {
+            fscanf(times, "%s", name);
+            if(strcmp(name, "plate") == 0)
+            {
+                fscanf(times, "%d %d", &washTime[0], &wipingTime[0]);
+            }
+            else if(strcmp(name, "spoon") == 0)
+            {
+                fscanf(times, "%d %d", &washTime[1], &wipingTime[1]);
+            }
+            else if(strcmp(name, "knife") == 0)
+            {
+                fscanf(times, "%d %d", &washTime[2], &wipingTime[2]);
+            }
+    }
+
+
+
+    if((msgid = msgget(key, 0)) > 0)
+    {
+            msgctl(msgid, IPC_RMID, 0);
+    }
+    msgid = msgget(key, 0666 | IPC_CREAT);
+
+    if((semid = semget(key, 1, 0)) > 0)
+    {
+            semctl(semid, IPC_RMID, 0);
+    }
+    semid = semget(key, 1, 0666 | IPC_CREAT);
+
+    int wait;
+    len = sizeof(char);
+    printf("Wiper: Nothing on the table!\n");
+    printf("I'll wait\n");
+
+    while(msgrcv(msgid, &mybuf, len, 1, 0))
+    {
+            Asem(0, 1, semid);
+
+        if(mybuf.type == 'p'){
+            name = "plate";
+        }
+        if(mybuf.type == 's')
+            name = "spoon";
+
+        if(mybuf.type == 'k')
+            name = "knife";
+
+        if(mybuf.type == END)
+        {
+            printf("Wiper: I'm done!\n");
+            exit(0);
+        }
+
+            printf("Wiper: wiping this %s\n\n", name);
+
+            if(strcmp(name, "plate") == 0)
+            {
+                    wait = wipingTime[0];
+                    sleep(wait);
+            }
+            else if(strcmp(name, "spoon") == 0)
+            {
+                wait = wipingTime[1];
+                sleep(wait);
+            }
+            else if(strcmp(name, "knife") == 0)
+            {
+                wait = wipingTime[2];
+                sleep(wait);
+            }
+            printf("Wiper: finised wiping the %s\n", name);
+            printf("... and I have nothing to do)!\n");
+    }
+
+
+
+
+
+    return 0;
+}

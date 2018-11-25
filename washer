@@ -13,7 +13,7 @@
 //this is washer 1
 #define END 42
 #define TYPES 4
-#define MAX_THINGS 3
+#define MAX_THINGS 1
 
 
 
@@ -31,8 +31,9 @@ int main()
     int amount, wait, time1, time2;
     int washTime[TYPES];
     int wipingTime[TYPES];
-    FILE* times = fopen("times.txt", "r+");
-
+    FILE* times = fopen("times.txt", "r");
+    FILE* heap = fopen("plates.txt", "r");
+    fscanf(heap, "%d", &amount);
 
 
 
@@ -45,7 +46,7 @@ int main()
     int msgid, semid;
     int len;
     key_t key;
-    char pathname[] = "wash_1.c";
+    char pathname[] = "plates.txt";
     key = ftok(pathname, 0);
     msgid = msgget(key, 0);
 
@@ -76,14 +77,11 @@ int main()
     semid = semget(key, 1, 0);
     Asem(0, MAX_THINGS, semid);
 
-
-    FILE* heap = fopen("plates.txt", "r");
-    fscanf(heap, "%d", &amount);
-
     for(int i = 0; i < amount; i++)
     {
             fscanf(heap, "%s", name);
-            printf("Washer: washing this: %s\n\n", name);
+            printf("Washer: washing this: %s\n", name);
+            printf("---\n");
             if(strcmp(name, "plate") == 0)
             {
                     wait = washTime[0];
@@ -100,14 +98,16 @@ int main()
                 sleep(wait);
             }
 
-            printf("Washer: No space to put the thing!\n");
-            printf("... Waiting\n");
+            printf("Washer: No space to put the thing! Wainig...\n");
+            printf("---\n");
             Asem(0, -1, semid);
             mybuf.mtype = 1;
             mybuf.type = name[0];
             len = sizeof(char);
+            //printf("SENDING\n");
             msgsnd(msgid, &mybuf, len, 0);
             printf("Washer: put the %s on table\n", name);
+            printf("---\n");
     }
 
 

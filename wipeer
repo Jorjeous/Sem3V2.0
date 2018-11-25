@@ -13,7 +13,7 @@
 //this is wiper 2
 #define END 42
 #define TYPES 4
-#define MAX_THINGS 3
+#define MAX_THINGS 1
 
 void Asem(int num, int a, int semid){
     struct sembuf mysembuf;
@@ -36,14 +36,14 @@ int main()
     int msgid, semid;
     int len;
     key_t key;
-    char pathname[] = "wash_1.c";
+    char pathname[] = "plates.txt";
     key = ftok(pathname, 0);
     msgid = msgget(key, 0);
 
 
 
     char* name = (char*)malloc(100 * sizeof(char));
-    FILE* times = fopen("times.txt", "r+");
+    FILE* times = fopen("times.txt", "r");
     for(int i = 0; i < TYPES; i++)
     {
             fscanf(times, "%s", name);
@@ -77,47 +77,52 @@ int main()
 
     int wait;
     len = sizeof(char);
-    printf("Wiper: Nothing on the table!\n");
-    printf("I'll wait\n");
+    printf("Wiper: Nothing on the table! Waiting for work to begin...\n");
+    printf("---\n");
 
     while(msgrcv(msgid, &mybuf, len, 1, 0))
     {
-            Asem(0, 1, semid);
+
+        Asem(0, 1, semid);
+        //printf("HERE\n");
 
         if(mybuf.type == 'p'){
             name = "plate";
+
         }
-        if(mybuf.type == 's')
+        if(mybuf.type == 's'){
             name = "spoon";
 
-        if(mybuf.type == 'k')
+        }
+        if(mybuf.type == 'k'){
             name = "knife";
-
+        }
         if(mybuf.type == END)
         {
             printf("Wiper: I'm done!\n");
             exit(0);
         }
 
-            printf("Wiper: wiping this %s\n\n", name);
+        printf("Wiper: wiping this %s\n", name);
+        printf("---\n");
 
-            if(strcmp(name, "plate") == 0)
-            {
-                    wait = wipingTime[0];
-                    sleep(wait);
-            }
-            else if(strcmp(name, "spoon") == 0)
-            {
-                wait = wipingTime[1];
+        if(strcmp(name, "plate") == 0)
+        {
+                wait = wipingTime[0];
                 sleep(wait);
-            }
-            else if(strcmp(name, "knife") == 0)
-            {
-                wait = wipingTime[2];
-                sleep(wait);
-            }
-            printf("Wiper: finised wiping the %s\n", name);
-            printf("... and I have nothing to do)!\n");
+        }
+        else if(strcmp(name, "spoon") == 0)
+        {
+            wait = wipingTime[1];
+            sleep(wait);
+        }
+        else if(strcmp(name, "knife") == 0)
+        {
+            wait = wipingTime[2];
+            sleep(wait);
+        }
+        printf("Wiper: finised wiping the %s\n", name);
+        printf("---\n");
     }
 
 

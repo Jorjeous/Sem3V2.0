@@ -49,7 +49,6 @@ int main()
     char pathname[] = "plates.txt";
     key = ftok(pathname, 0);
     msgid = msgget(key, 0);
-
     semid = semget(key, 1, 0);
 
 
@@ -86,21 +85,31 @@ int main()
             {
                     wait = washTime[0];
                     sleep(wait);
+                    printf("Washer: No space to put the thing! Wainig...(maybe 0)\n");
+                    printf("---\n");
+                    Asem(0, -1, semid);
             }
             else if(strcmp(name, "spoon") == 0)
             {
                 wait = washTime[1];
                 sleep(wait);
+                printf("Washer: No space to put the thing! Wainig...(maybe 0)\n");
+                printf("---\n");
+                Asem(0, -1, semid);
             }
             else if(strcmp(name, "knife") == 0)
             {
                 wait = washTime[2];
                 sleep(wait);
+                printf("Washer: No space to put the thing! Wainig...(maybe 0)\n");
+                printf("---\n");
+                Asem(0, -1, semid);
             }
 
-            printf("Washer: No space to put the thing! Wainig...\n");
-            printf("---\n");
-            Asem(0, -1, semid);
+
+
+            //Asem(0, -1, semid); //prevent sending plate to full tbl
+
             mybuf.mtype = 1;
             mybuf.type = name[0];
             len = sizeof(char);
@@ -109,6 +118,8 @@ int main()
             printf("Washer: put the %s on table\n", name);
             printf("---\n");
     }
+
+
 
 
 
@@ -128,3 +139,4 @@ int main()
 
     return 0;
 }
+

@@ -29,11 +29,9 @@ void FindInDir(char* folder, char* FindFileName, int depth)
                 }
             }
             else if((dp->d_type==4) && ((strcmp(dp->d_name,".") != 0) && (strcmp(dp->d_name,"..") != 0))){
-                    //printf("here\n");
                     sprintf(folder_tmp,"%s/%s", folder,dp->d_name);
                     //printf("floderIs:%s\n", folder_tmp);
                     FindInDir(folder_tmp, FindFileName, (depth-1));
-                    //break;
                 }
         }
     closedir(dir);

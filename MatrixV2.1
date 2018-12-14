@@ -5,10 +5,8 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <time.h>
-
+//gcc thread.c -lpthread -O3
 /* FIXIT:
-2) 
-
 
 = step_i++; вот здесь у вас состояние гонки ...(Нужно ли пробовать исправть с помощью мютекса, или стоит придумать что то другое?)(исправил по другому))
 3) лучше замеряйте время только перемножения матриц ... без генерации и вывода на экран(готово)
@@ -19,7 +17,7 @@
 */
 
 //size of matrix
-#define MAX 1000
+#define MAX 4
 #define MAX_THREAD 1000
 #define PART 1000
 

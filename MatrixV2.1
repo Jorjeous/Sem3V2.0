@@ -1,11 +1,111 @@
-#include <sys/types.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
 #include <time.h>
-//gcc thread.c -lpthread -O3
+#include <stdlib.h>
+#include <sys/time.h>
+//size of matrix
+#define MAX 1500
+#define MAX_THREAD 1
+#define PART 4
+
+
+
+
+
+
+int matA[MAX][MAX];
+int matB[MAX][MAX];
+long int matC[MAX][MAX];
+//int core[MAX_THREAD];
+//int step_i = 0;
+struct Core_Information
+{
+    int step;
+}Info[MAX_THREAD];
+double get_wall_time(){
+    struct timeval time;
+    if(gettimeofday(&time, NULL)){
+        return 0;
+    }
+    return (double)time.tv_sec+(double)time.tv_usec*0.000001;
+}
+
+
+void* multi(void* arg)
+{
+    struct Core_Information* core = (struct Core_Information*) arg;
+
+    // Each thread computes 1/PATR  of matrix multiplication
+    printf("Step:%d", core->step);
+    for (int i = (core->step) * MAX / MAX_THREAD; i < ((core->step) + 1) * MAX / MAX_THREAD; i++){
+        for (int j = 0; j < MAX; j++){
+            matC[i][j]=0;
+            for (int k = 0; k < MAX; k++){
+                matC[i][j] += matA[i][k] * matB[k][j];
+            }
+        }
+    }
+
+}
+
+
+
+int main()
+{
+    time_t time1;
+    time_t time2;
+    long int i, j, k;
+    //int step[MAX_THREAD];
+    //avoiding race condition
+    for(i = 0; i < MAX_THREAD; i++){
+        Info[i].step = i;
+    }
+
+    //random values in matA and matB
+    for (i = 0; i < MAX; i++) {
+        for (j = 0; j < MAX; j++) {
+            matA[i][j] = rand() % 1000;
+            matB[i][j] = rand() % 1000;
+        }
+    }
+
+
+    time1 = time(NULL);
+    double start = get_wall_time();
+    pthread_t threads[MAX_THREAD];
+
+    // Creating MAXTHREAD amount of threads, each should calc its own part
+    for (i = 0; i < MAX_THREAD; i++) {
+        pthread_create(&threads[i], NULL, multi, (void*)(&Info[i]));
+    }
+
+    // waiting for all threads to do their job
+    for (i = 0; i < MAX_THREAD; i++){
+        pthread_join(threads[i], NULL);
+    }
+
+    time2 = time(NULL);
+    double end = get_wall_time();
+
+    printf("\n Multiplication of A and B \n");
+    /*for (i = 0; i < MAX; i++) {
+        for (j = 0; j < MAX; j++){
+            printf("%d ", matC[i][j]);
+        }
+        printf("\n");
+    }*/
+
+    printf("\n time:%f\n", difftime(time2,time1));
+    printf("\n Wall-time:%f\n", end - start);
+    return 0;
+
+}
+
+
+
+
+//gcc main.c -lpthread -O3
 /* FIXIT:
 
 = step_i++; вот здесь у вас состояние гонки ...(Нужно ли пробовать исправть с помощью мютекса, или стоит придумать что то другое?)(исправил по другому))
@@ -15,84 +115,6 @@
 5) удостоверьтесь, что при фиксированных матрицах на входе у вас один и тот же результат перемножения(да, результат получается один и тот же)
 при различном количестве используемых нитей)
 */
-
-//size of matrix
-#define MAX 4
-#define MAX_THREAD 1000
-#define PART 1000
-
-
-
-int matA[MAX][MAX];
-int matB[MAX][MAX];
-int matC[MAX][MAX];
-int core[MAX_THREAD];
-int step_i = 0;
-
-
-
-void* multi(void* arg)
-{
-    int core = (int) arg;
-
-    // Each thread computes 1/PATR  of matrix multiplication
-    for (int i = core * MAX / PART; i < (core + 1) * MAX / PART; i++){
-        for (int j = 0; j < MAX; j++){
-            for (int k = 0; k < MAX; k++){
-                matC[i][j] += matA[i][k] * matB[k][j];
-            }
-        }
-    }
-
-}
-int main()
-{
-    double time1;
-    double time2;
-    int i, j, k;
-    int step[MAX_THREAD];
-
-    for(i = 1; i <= MAX; i++){
-        step[i] = i;
-    }
-
-    //random values in matA and matB
-    for (i = 0; i < MAX; i++) {
-        for (j = 0; j < MAX; j++) {
-            matA[i][j] = rand() % 10;
-            matB[i][j] = rand() % 10;
-        }
-    }
-
-
-    time1 = get_wall_time();
-   
-    pthread_t threads[MAX_THREAD];
-
-    // Creating MAXTHREAD amount of threads, each should calc its own part
-    for (i = 0; i < MAX_THREAD; i++) {
-        pthread_create(&threads[i], NULL, multi, (void*)(&step[i]));
-    }
-
-    // waiting for all threads to do their job
-    for (i = 0; i < MAX_THREAD; i++){
-        pthread_join(threads[i], NULL);
-    }
-        
-    time2 = get_wall_time();
-
-    printf("\n Multiplication of A and B \n");
-    for (i = 0; i < MAX; i++) {
-        for (j = 0; j < MAX; j++){
-            printf("%d ", matC[i][j]);
-        }
-        printf("\n");
-    }
-
-    printf("\n time:%d\n", time2-time1);
-    return 0;
-
-}
 
 
 

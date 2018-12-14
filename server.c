@@ -11,7 +11,8 @@
 
 
 #define LAST_MESSAGE 255 /* Тип сообщения для прекращения работы */
-//#define AMOUNT 5
+#define AMOUNT 2
+#define TIME 4
 void Asem(int num, int a, int semid){
     struct sembuf mysembuf;
 
@@ -58,7 +59,8 @@ if((semid = semget(semkey, 1, 0)) > 0)
     semctl(semid, IPC_RMID, 0);
 }
 semid = semget(semkey, 1, 0666 | IPC_CREAT);
-Asem(0, 2, semid);
+    
+Asem(0, AMOUNT, semid);
 
 /* Пытаемся получить доступ по ключу к очереди сообщений, если она существует,
 или создать ее, если она еще не существует, с правами доступа
@@ -85,9 +87,10 @@ while(1){
     int pid = fork();
     if(pid == 0)
     {
+        //printf("Working with new client, pid:%d\n", mybuf.mypid);
         int result;
         result = mybuf.a * mybuf.b;
-        sleep(7);
+        sleep(TIME);
 
         mybuf.mtype = mybuf.mypid;
         mybuf.a = result;
